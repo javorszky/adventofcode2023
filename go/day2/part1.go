@@ -10,6 +10,12 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const (
+	maxRed   = 12
+	maxGreen = 13
+	maxBlue  = 14
+)
+
 func Task1(l zerolog.Logger) {
 	localLogger := l.With().Int("day", 2).Int("part", 1).Logger()
 
@@ -18,10 +24,6 @@ func Task1(l zerolog.Logger) {
 		localLogger.Err(err).Msg("could not read input file")
 		os.Exit(1)
 	}
-
-	maxRed := 12
-	maxGreen := 13
-	maxBlue := 14
 
 	sum := 0
 
