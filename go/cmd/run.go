@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/javorszky/adventofcode2023/day1"
 	"strconv"
 
 	"github.com/pkg/errors"
@@ -25,7 +26,9 @@ to quickly create a Cobra application.`,
 		l.Info().Msg("Welcome to Gabor Javorszky's Advent of Code 2023 solutions!")
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 
-		tasks := map[int][2]func(logger zerolog.Logger){}
+		tasks := map[int][2]func(logger zerolog.Logger){
+			1: {day1.Task1, day1.Task2},
+		}
 
 		lenT := len(tasks)
 		day := 0
