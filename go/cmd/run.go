@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/javorszky/adventofcode2023/day1"
+	"github.com/javorszky/adventofcode2023/day2"
 	"strconv"
 
 	"github.com/pkg/errors"
@@ -28,6 +29,7 @@ to quickly create a Cobra application.`,
 
 		tasks := map[int][2]func(logger zerolog.Logger){
 			1: {day1.Task1, day1.Task2},
+			2: {day2.Task1, day2.Task2},
 		}
 
 		lenT := len(tasks)
