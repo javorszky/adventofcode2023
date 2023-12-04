@@ -1,6 +1,8 @@
 # Day {{ .Day }}
 
-[back to index](https://github.com/javorszky/adventofcode2022/)
+[back to index](https://github.com/javorszky/adventofcode2023/)
+
+[link on aoc website](https://adventofcode.com/2023/day/{{ .Day }})
 
 ## Part 1
 
