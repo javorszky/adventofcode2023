@@ -11,6 +11,7 @@ import (
 	"github.com/javorszky/adventofcode2023/day1"
 	"github.com/javorszky/adventofcode2023/day2"
 	"github.com/javorszky/adventofcode2023/day3"
+	"github.com/javorszky/adventofcode2023/day4"
 )
 
 // runCmd represents the run command
@@ -32,6 +33,7 @@ to quickly create a Cobra application.`,
 			1: {day1.Task1, day1.Task2},
 			2: {day2.Task1, day2.Task2},
 			3: {day3.Task1, day3.Task2},
+			4: {day4.Task1, day4.Task2},
 		}
 
 		lenT := len(tasks)
