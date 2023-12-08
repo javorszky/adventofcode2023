@@ -35,7 +35,7 @@ to quickly create a Cobra application.`,
 			2: {day2.Task1, day2.Task2},
 			3: {day3.Task1, day3.Task2},
 			4: {day4.Task1, day4.Task2},
-			5: {day5.Task1, day5.Task2},
+			5: {day5.Task1, day5.Task2HeatDeathOfTheUniverse},
 		}
 
 		lenT := len(tasks)
