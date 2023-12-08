@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	maps = []string{
+	groupMap = []string{
 		"seeds",
 		"seed2soil",
 		"soil2fertilizer",
@@ -103,9 +103,9 @@ func parseGroups(group [][]string) (map[string][]map[string]int, error) {
 
 	// extract the rest of the groups
 	for i := 1; i < len(group); i++ {
-		newMap, err := parseGroup(maps[i], group[i])
+		newMap, err := parseGroup(groupMap[i], group[i])
 		if err != nil {
-			return nil, errors.Wrapf(err, "parsing %s: %v", maps[i], group[i])
+			return nil, errors.Wrapf(err, "parsing %s: %v", groupMap[i], group[i])
 		}
 
 		for k, v := range newMap {
@@ -169,17 +169,17 @@ func walkSeed(groupMap map[string][]map[string]int, seed int) int {
 }
 
 func findMap(source int, group []map[string]int) int {
-	for _, maps := range group {
+	for _, gMap := range group {
 
-		if source < maps["source"] {
+		if source < gMap["source"] {
 			continue
 		}
 
-		if source-maps["len"] > maps["source"] {
+		if source-gMap["len"] > gMap["source"] {
 			continue
 		}
 
-		return maps["dest"] + (source - maps["source"])
+		return gMap["dest"] + (source - gMap["source"])
 	}
 
 	return source
