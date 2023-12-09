@@ -1,7 +1,6 @@
 package day5
 
 import (
-	"fmt"
 	"github.com/javorszky/adventofcode2023/inputs"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
@@ -58,8 +57,8 @@ func Task2(l zerolog.Logger) {
 	previous = sections["seeds"]
 
 	for i := 1; i < len(groupMap); i++ {
-		fmt.Printf("\n\n================ Parsing %s ================\n\n", groupMap[i])
-		fmt.Printf("previous section: %#v\nnew section: %#v\n", previous, sections[groupMap[i]])
+		//fmt.Printf("\n\n================ Parsing %s ================\n\n", groupMap[i])
+		//fmt.Printf("previous section: %#v\nnew section: %#v\n", previous, sections[groupMap[i]])
 
 		previous = overlaps(previous, sections[groupMap[i]])
 	}
@@ -162,7 +161,7 @@ func overlaps(sourceSections []section, targetSections []section) []section {
 		start = sourceStart
 		end = sourcePairs[sourceStart]
 
-		fmt.Printf("- outer: start %d / end %d, stepvalue set to start\n", start, end)
+		//fmt.Printf("- outer: start %d / end %d, stepvalue set to start\n", start, end)
 		stepValue := start
 
 		i := 0
@@ -172,17 +171,17 @@ func overlaps(sourceSections []section, targetSections []section) []section {
 			i++
 
 			covers, next, delta := doesSectionCoverThisValue(stepValue, targetSections)
-			fmt.Printf("\n  :: inner iter %d: stepvalue %d, covers next delta are %t, %d, %d\n", i, stepValue, covers, next, delta)
+			//fmt.Printf("\n  :: inner iter %d: stepvalue %d, covers next delta are %t, %d, %d\n", i, stepValue, covers, next, delta)
 
 			switch covers {
 			case false:
-				fmt.Printf("  :: inner::: iter %d: covers false\n", i)
+				//fmt.Printf("  :: inner::: iter %d: covers false\n", i)
 
 				switch {
 				case next == 0:
 					fallthrough
 				case next > end:
-					fmt.Printf("  :: inner iter %d: no cover, next is either 0, or less than the end (next/end: %d/%d)\n", i, next, end)
+					//fmt.Printf("  :: inner iter %d: no cover, next is either 0, or less than the end (next/end: %d/%d)\n", i, next, end)
 					// does not cover it, and the next one is past the end of the current one or
 					// does not cover it and there are no more sections in the receiving end to deal with.
 					// most straightforward, we need to add a 1:1 section that covers from stepValue to end
@@ -194,9 +193,9 @@ func overlaps(sourceSections []section, targetSections []section) []section {
 						delta:            0,
 					})
 
-					fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, end, 0)
+					//fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, end, 0)
 
-					fmt.Printf("  :: inner iter %d: breaking fragmentloop, it should start a new start/end iteration\n\n", i)
+					//fmt.Printf("  :: inner iter %d: breaking fragmentloop, it should start a new start/end iteration\n\n", i)
 					// once we're here, we need to tick the sending sections over
 					break fragmentLoop
 				case next <= end:
@@ -210,17 +209,17 @@ func overlaps(sourceSections []section, targetSections []section) []section {
 						delta:            0,
 					})
 
-					fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, next-1, delta)
+					//fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, next-1, delta)
 
 					stepValue = next
 
-					fmt.Printf("  :: inner iter %d: not cover it, next is smaller than or equal to end, so setting step value "+
-						"to be next + 1 (stepvalue, next: %d, %d), but not breaking!\n", i, stepValue, next)
+					//fmt.Printf("  :: inner iter %d: not cover it, next is smaller than or equal to end, so setting step value "+
+					//	"to be next + 1 (stepvalue, next: %d, %d), but not breaking!\n", i, stepValue, next)
 				default:
 					panic("you dun effed up")
 				}
 			case true:
-				fmt.Printf("  :: inner::: iter %d: covers true\n", i)
+				//fmt.Printf("  :: inner::: iter %d: covers true\n", i)
 
 				switch {
 				case next <= end:
@@ -234,11 +233,11 @@ func overlaps(sourceSections []section, targetSections []section) []section {
 						delta:            delta,
 					})
 
-					fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, next, delta)
+					//fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, next, delta)
 
 					stepValue = next + 1
-					fmt.Printf("  :: inner iter %d: covers, next is smaller equal to end (%d/%d), setting stepvalue to be "+
-						"next + 1: %d/%d\n", i, next, end, stepValue, next)
+					//fmt.Printf("  :: inner iter %d: covers, next is smaller equal to end (%d/%d), setting stepvalue to be "+
+					//	"next + 1: %d/%d\n", i, next, end, stepValue, next)
 				default:
 					// covers it, but next is bigger than end, so we need a section to cover until the end, and then
 					// break
@@ -250,23 +249,23 @@ func overlaps(sourceSections []section, targetSections []section) []section {
 						delta:            delta,
 					})
 
-					fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, end, delta)
+					//fmt.Printf("  :: inner iter %d: added section source / end / delta: %d / %d / %d\n", i, stepValue, end, delta)
 
-					fmt.Printf("  :: inner iter %d: covers, next %d is bigger than end %d, so breaking the inner loop"+
-						" which should start a new start/end loop\n\n", i, next, end)
+					//fmt.Printf("  :: inner iter %d: covers, next %d is bigger than end %d, so breaking the inner loop"+
+					//	" which should start a new start/end loop\n\n", i, next, end)
 
 					break fragmentLoop
 				}
 			}
 
-			fmt.Printf("  :: inner iter %d: outside of switch, uh...\n", i)
+			//fmt.Printf("  :: inner iter %d: outside of switch, uh...\n", i)
 
 			if i > 10 {
 				break fragmentLoop
 			}
 
 			if stepValue > end {
-				fmt.Printf("  :: inner iter %d: stepvalue %d is bigger than end %d, breaking\n", i, stepValue, end)
+				//fmt.Printf("  :: inner iter %d: stepvalue %d is bigger than end %d, breaking\n", i, stepValue, end)
 				break fragmentLoop
 			}
 		}
