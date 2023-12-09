@@ -112,6 +112,14 @@ So, the lowest location number in this example is `35`.
 
 ### Solution
 
+This was fairly easy, essentially just a bunch of transformation functions.
+
+Needed to create a function that takes an incoming number, then checks the group of mappings for the individual step, iterates over all of them, and checks if that particular value is within the range of any valid maps. If it isn't, it returns the incoming number as is, if it was found in a map's source side, it transformed it by the delta that the mapping happened.
+
+This was reasonable for the few numbers that were the inputs.
+
+At the end of it I got a bunch of location numbers, they were put in a slice, that slice ordered, and took the first value out of it, and that was the lowest value.
+
 ## Part 2
 
 Everyone will starve if you only plant such a small number of seeds. Re-reading the almanac, it looks like the `seeds:` line actually describes **ranges of seed numbers**.
@@ -131,3 +139,62 @@ In the above example, the lowest location number can be obtained from seed numbe
 Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. **What is the lowest location number that corresponds to any of the initial seed numbers?**
 
 ### Solution
+
+Using part 1's solution would have ended in a heat death of the universe kind of solution, so that was a no go. At some point I decided I would throw more CPU at it, but after 47 minutes it still didn't produce anything of use, even though some users on the socials reported that they did brute force it in 6 hours or so.
+
+SO the correct, non heat death of the universe solution is significantly easier. And more complicated.
+
+The whole idea behind it is the ribbon chart. There's a range of values that go in, and a range that come out, but that pipe is the same width, always parallel. That means that I can collapse the many transformations into other transformations.
+
+The seed ranges are the OG output, and then the seed to soil has an input side (seed), and an output side (soil). That can be chained.
+
+```
+ OG input                   seed to soil map                       soil to fertilizer
+seed(output) <-> seed(input) [do stuff] soil(output) <-> soil(input) [do stuff] fertilizer(output) <-> ...
+```
+
+Which means all we gotta do is completely map the ranges in the seed output:
+- for the ranges that the seed to soil map covers that there are no seed outputs, we can discard those
+- for the ranges that seed output has that the seed to soil map does not have, we can have a delta zero mapping added
+- consider the example input
+
+```
+soil ranges:
+79 -> 93
+55 -> 68
+
+soil to seed mappings
+98-99 -> 50-51  delta of -48
+50-97 -> 52-99  delta of +2
+```
+In this case we're only really interested in what the soil to seed does in the **55->68** and **79->93** ranges.
+```
+55-68 -> 57-70 // this entire seed range is covered by one mapping of the soil to seed
+79-93 -> 81-95 // this entire seed range is covered by one mapping of the soil to seed 
+```
+The following parts of the soil to seed mappings have been discarded, because no one cares.
+```
+98-99 -> 50-51
+50-54 -> 52-56
+94-97 -> 96-99
+```
+
+The next step is to take the resulting destination ranges, and map those to the next mapping:
+```
+// destination of the normalised seed to soil mapping
+57-70
+81-95
+
+// mapping of the soil to fertilizer
+15-51 -> 0-36 // all of this is discarded, because no part of the previous grouping's destination covers this
+52-53 -> 37-38 // all of this is discarded, same reason
+ 0-14 -> 39-53 // all of this is discarded, same reason
+```
+This mapping goes through straight: `57-70 -> 57-70`.
+
+And so on.
+
+At the end I'm left with a set of groupings as I slice and dice the intermediaries, then I loop through all of them, and find the lowest `destinationStart` from all the groups. Because I started with checking for only ribbons that cover the input seed ranges, I know that whatever value I get will map to some seed at some point.
+
+This is significantly faster than checking each individual value one by one.
+
