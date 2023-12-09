@@ -24,8 +24,8 @@ var (
 		"humidity2location",
 	}
 
-	seedOrder = []string{"seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location"}
-	//locationOrder = []string{"location", "humidity", "temperature", "light", "water", "fertilizer", "soil", "seed"}
+	seedOrder     = []string{"seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location"}
+	locationOrder = []string{"location", "humidity", "temperature", "light", "water", "fertilizer", "soil", "seed"}
 
 	fromSeed = map[string]string{
 		"seed":        "soil",
@@ -49,7 +49,7 @@ func Task1(l zerolog.Logger) {
 		fromLocation[v] = k
 	}
 
-	groups, err := inputs.GroupByBlankLines("day5/input1.txt")
+	groups, err := inputs.GroupByBlankLines("day5/example.txt")
 	if err != nil {
 		localLogger.Err(err).Msg("could not read input file")
 		os.Exit(1)
