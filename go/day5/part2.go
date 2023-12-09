@@ -31,37 +31,50 @@ func Task2(l zerolog.Logger) {
 		os.Exit(1)
 	}
 
-	m, err := parseGroups(groups)
-	if err != nil {
-		localLogger.Err(err).Msg("parseGroups returned an error")
-	}
-
 	// extract the seeds first
 	seeds, err := parseSeeds(groups[0][0])
 	if err != nil {
-		localLogger.Err(err).Msgf("parseSeeds")
+		localLogger.Err(err).Msg("parseSeeds")
 	}
 
-	locations := make([]int, len(seeds))
+	seedSections := parseSeedsToSections(seeds)
 
-	for i, seed := range seeds {
-		locations[i] = walkSeed(m, seed)
+	sections, err := parseGroupsToSections(groups)
+	if err != nil {
+		localLogger.Err(err).Msg("parseGroupsToSections")
 	}
 
-	sort.Ints(locations)
+	sections["seeds"] = seedSections
 
-	solution := locations[0]
+	keys := make([]string, 0)
+	for k, _ := range sections {
+		keys = append(keys, k)
+	}
 
+	var (
+		previous []section
+	)
+
+	previous = sections["seeds"]
+
+	for i := 1; i < len(groupMap); i++ {
+		fmt.Printf("\n\n================ Parsing %s ================\n\n", groupMap[i])
+		fmt.Printf("previous section: %#v\nnew section: %#v\n", previous, sections[groupMap[i]])
+
+		previous = overlaps(previous, sections[groupMap[i]])
+	}
+
+	lowestDestination := 2 << 61
+
+	for _, sect := range previous {
+		if sect.destinationStart < lowestDestination {
+			lowestDestination = sect.destinationStart
+		}
+	}
+
+	solution := lowestDestination
 	s := localLogger.With().Int("solution", solution).Logger()
 	s.Info().Msgf("Lowest location number is %d", solution)
-}
-
-// destination - source - length
-
-func transformFunction(delta int) func(in int) int {
-	return func(in int) int {
-		return in + delta
-	}
 }
 
 func parseSeedsToSections(seeds []int) []section {
@@ -70,9 +83,9 @@ func parseSeedsToSections(seeds []int) []section {
 	for i := 0; i < len(seeds); i = i + 2 {
 		m = append(m, section{
 			sourceStart:      seeds[i],
-			sourceEnd:        seeds[i+1],
+			sourceEnd:        seeds[i] + seeds[i+1],
 			destinationStart: seeds[i],
-			destinationEnd:   seeds[i+1],
+			destinationEnd:   seeds[i] + seeds[i+1],
 			delta:            0,
 		})
 	}
@@ -100,12 +113,7 @@ func parseGroupsToSections(group [][]string) (map[string][]section, error) {
 
 func groupToSection(label string, group []string) (map[string][]section, error) {
 	m := make(map[string][]section)
-
-	labelParts := strings.Split(label, "2")
-	flipLabel := fmt.Sprintf("%s2%s", labelParts[1], labelParts[0])
-
 	m[label] = make([]section, 0)
-	m[flipLabel] = make([]section, 0)
 
 	dataSlice := [3]int{}
 
@@ -121,18 +129,10 @@ func groupToSection(label string, group []string) (map[string][]section, error) 
 		}
 
 		m[label] = append(m[label], section{
-			sourceStart:      dataSlice[0],
-			sourceEnd:        dataSlice[0] + dataSlice[2],
-			destinationStart: dataSlice[1],
-			destinationEnd:   dataSlice[1] + dataSlice[2],
-			delta:            dataSlice[1] - dataSlice[0],
-		})
-
-		m[flipLabel] = append(m[flipLabel], section{
 			sourceStart:      dataSlice[1],
-			sourceEnd:        dataSlice[1] + dataSlice[2],
+			sourceEnd:        dataSlice[1] + dataSlice[2] - 1,
 			destinationStart: dataSlice[0],
-			destinationEnd:   dataSlice[0] + dataSlice[2],
+			destinationEnd:   dataSlice[0] + dataSlice[2] - 1,
 			delta:            dataSlice[0] - dataSlice[1],
 		})
 	}
@@ -148,8 +148,8 @@ func overlaps(sourceSections []section, targetSections []section) []section {
 	sourcePairs := make(map[int]int)
 	sourceOrder := make([]int, len(sourceSections))
 	for i, s := range sourceSections {
-		sourcePairs[s.sourceStart] = s.sourceEnd
-		sourceOrder[i] = s.sourceStart
+		sourceOrder[i] = s.destinationStart
+		sourcePairs[s.destinationStart] = s.destinationEnd
 	}
 
 	sort.Ints(sourceOrder)

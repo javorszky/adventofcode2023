@@ -14,7 +14,7 @@ import (
 func Task2HeatDeathOfTheUniverse(l zerolog.Logger) {
 	localLogger := l.With().Int("day", 5).Int("part", 2).Logger()
 
-	groups, err := inputs.GroupByBlankLines("day5/input1.txt")
+	groups, err := inputs.GroupByBlankLines("day5/example.txt")
 	if err != nil {
 		localLogger.Err(err).Msg("could not read input file")
 		os.Exit(1)

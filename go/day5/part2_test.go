@@ -23,6 +23,23 @@ func Test_overlaps(t *testing.T) {
 		},
 	}
 
+	sourceSectionsWithDeltas := []section{
+		{
+			sourceStart:      0,
+			sourceEnd:        56,
+			destinationStart: 4,
+			destinationEnd:   60,
+			delta:            4,
+		},
+		{
+			sourceStart:      128,
+			sourceEnd:        172,
+			destinationStart: 98,
+			destinationEnd:   142,
+			delta:            -30,
+		},
+	}
+
 	type args struct {
 		listA []section
 		listB []section
@@ -36,6 +53,65 @@ func Test_overlaps(t *testing.T) {
 			name: "finds overlap",
 			args: args{
 				listA: sourceSections,
+				listB: []section{
+					{
+						sourceStart:      0,
+						sourceEnd:        9,
+						destinationStart: 4,
+						destinationEnd:   13,
+						delta:            4,
+					},
+					{
+						sourceStart:      53,
+						sourceEnd:        101,
+						destinationStart: 70,
+						destinationEnd:   118,
+						delta:            17,
+					},
+				},
+			},
+			want: []section{
+				{
+					sourceStart:      4,
+					sourceEnd:        9,
+					destinationStart: 8,
+					destinationEnd:   13,
+					delta:            4,
+				},
+				{
+					sourceStart:      10,
+					sourceEnd:        52,
+					destinationStart: 10,
+					destinationEnd:   52,
+					delta:            0,
+				},
+				{
+					sourceStart:      53,
+					sourceEnd:        60,
+					destinationStart: 70,
+					destinationEnd:   77,
+					delta:            17,
+				},
+				{
+					sourceStart:      98,
+					sourceEnd:        101,
+					destinationStart: 115,
+					destinationEnd:   118,
+					delta:            17,
+				},
+				{
+					sourceStart:      102,
+					sourceEnd:        142,
+					destinationStart: 102,
+					destinationEnd:   142,
+					delta:            0,
+				},
+			},
+		},
+		{
+			name: "finds overlaps with sources that have deltas",
+			args: args{
+				listA: sourceSectionsWithDeltas,
 				listB: []section{
 					{
 						sourceStart:      0,
