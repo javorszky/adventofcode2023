@@ -198,3 +198,7 @@ At the end I'm left with a set of groupings as I slice and dice the intermediari
 
 This is significantly faster than checking each individual value one by one.
 
+Also, enjoy this first advent of code fuckup assessment form:
+
+![day 5 part 2 fuck up assessment form](../assets/day5p2.png)
+
