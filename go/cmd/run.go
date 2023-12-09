@@ -26,7 +26,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		l := zerolog.New(zerolog.NewConsoleWriter()).With().Timestamp().Str("module", "adventofcode").Int("year", 2022).Logger()
+		l := zerolog.New(zerolog.NewConsoleWriter()).With().Timestamp().Str("module", "adventofcode").Int("year", 2023).Logger()
 		l.Info().Msg("Welcome to Gabor Javorszky's Advent of Code 2023 solutions!")
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 

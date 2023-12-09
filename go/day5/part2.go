@@ -16,7 +16,7 @@ type section struct {
 }
 
 func Task2(l zerolog.Logger) {
-	localLogger := l.With().Int("day", 5).Int("part", 1).Logger()
+	localLogger := l.With().Int("day", 5).Int("part", 2).Logger()
 
 	fromLocation = make(map[string]string)
 
