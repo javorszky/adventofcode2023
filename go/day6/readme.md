@@ -52,6 +52,45 @@ Determine the number of ways you could beat the record in each race. **What do y
 
 ### Solution
 
+Uh, this is the quadratic formula. We have a target, say 200, and we need to figure out how long to hold the button to go fast, but we can only hold it for at most 30 seconds. We need to find X.
+
+x * (30 - x) = 200
+
+What values of X will we get more than 200 in that equation? Let's rearrange that:
+
+```
+x * (30 - x) = 200
+    30x - x2 = 200
+           0 = x2 - 30x + 200
+```
+And now you can use your usual quadratic formula here: `(-b +- sqrt(b2 - 4ac)) / 2a`
+```
+result1 = ( 30 + sqrt( (30 * 30) - 4 * 1 * 200 ) ) / 2
+result2 = ( 30 - sqrt( (30 * 30) - 4 * 1 * 200 ) ) / 2
+```
+These are going to be floats, you take the ceil of the lower, the floor of the upper number, get their difference, add 1 because off by one errors, and multiply them together.
+
 ## Part 2
 
+As the race is about to start, you realize the piece of paper with race times and record distances you got earlier actually just has very bad kerning. There's really `only one race` - ignore the spaces between the numbers on each line.
+
+So, the example from before:
+
+```
+Time:      7  15   30
+Distance:  9  40  200
+```
+...now instead means this:
+
+```
+Time:      71530
+Distance:  940200
+```
+
+Now, you have to figure out how many ways there are to win this single race. In this example, the race lasts for **71530 milliseconds** and the record distance you need to beat is **940200 millimeters**. You could hold the button anywhere from `14` to `71516` milliseconds and beat the record, a total of **71503** ways!
+
+**How many ways can you beat the record in this one much longer race?**
+
 ### Solution
+
+Same answer as above, the equations are fast.
