@@ -24,7 +24,7 @@ func Task2(l zerolog.Logger) {
 		fromLocation[v] = k
 	}
 
-	groups, err := inputs.GroupByBlankLines("day5/example.txt")
+	groups, err := inputs.GroupByBlankLines("day5/input1.txt")
 	if err != nil {
 		localLogger.Err(err).Msg("could not read input file")
 		os.Exit(1)
