@@ -108,3 +108,22 @@ With the new joker rule, the total winnings in this example are `5905`.
 Using the new joker rule, find the rank of every hand in your set. What are the new total winnings?
 
 ### Solution
+
+Mostly the same, except the value of J card gets changed, and the upgrade rules are implemented, which needs a change in the classify function:
+ * first I get the original classification of the hand, then
+ * if the hand does not have a J in it, or has 5 Js in it, I return the original classification, otherwise the following rules apply:
+   * if it's a four of a kind or a full house originally -> five of a kind
+   * if it's a three of a kind -> four of a kind
+     * (we know, because if it's a three of a kind with 2 Js, then it would have been a full house, if it's a three of a kind with 3Js, then the other two are different, otherwise it would have been a full house)
+   * two pair can be turned into two different things
+     * if there's exactly one J in it, it upgrades to a full house. That J takes on the card of one of the pairs making it a pair and a three of a kind, which is a full house, or
+     * if there are two Js in it, then it takes on the other pair, making it a four of a kind
+   * if it's a one pair -> three of a kind
+     * either the pair is non-J, which means there's exactly one J in there, which would make that a three of a kind, or
+     * the pair is J, which means the other three are different, so the Js can turn into one of the others, which would make it a three of a kind
+   * high card -> one pair
+     * there's exactly one J in there, otherwise the others would have matched already, so turn that J to one of the others
+
+No other upgrade paths are possible.
+
+And from this, the usual grouping of the reclassified cards, and the sorting of them happens, and the rollup of the rank * bid.
