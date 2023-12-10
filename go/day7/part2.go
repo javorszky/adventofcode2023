@@ -61,15 +61,12 @@ func Task2(l zerolog.Logger) {
 
 	for _, currentClass := range tierOrder {
 		localSlice := sortHandsPart2(classification[currentClass])
-		fmt.Printf("========= Putting the %s ordered into global order ============\n", currentClass)
-		fmt.Printf("%v\n\n", localSlice)
 		globalOrder = append(globalOrder, localSlice...)
 	}
 
 	sum := 0
 
 	for i, card := range globalOrder {
-		fmt.Printf("adding the rank %d times bid %d = %d to the sum\n", i+1, hands[card], (i+1)*hands[card])
 		sum += (i + 1) * hands[card]
 	}
 
@@ -97,23 +94,19 @@ func classifyHandPart2(hand string) handType {
 	case fullHouse:
 		// full house with a J in it look either like
 		// QQQJJ or QQJJJ, and both cases can become a five of a kind
-		fmt.Printf("class %9s, hand %s, returning five of a kind\n", class, hand)
 		return fiveOfAKind
 	case threeOfAKind:
 		// this has not matched any of the above, so the three of a kind looks either of these:
 		// QQQJA or JJJQA, and both of them can become a four of a kind
-		fmt.Printf("class %9s, hand %s, returning four of a kind\n", class, hand)
 		return fourOfAKind
 	case twoPair:
 		// if one of the pairs of the two pair are the Js, then yeah
 		// QQJJA -> four of a kind, but
-		// QQAAJ -> three of a kind
+		// QQAAJ -> full house
 		switch jeez {
 		case 1:
-			fmt.Printf("class %9s, hand %s, returning three of a kind\n", class, hand)
-			return threeOfAKind
+			return fullHouse
 		case 2:
-			fmt.Printf("class %9s, hand %s, returning four of a kind\n", class, hand)
 			return fourOfAKind
 		default:
 			panic(fmt.Sprintf("this should never have happened, twopair: jeez: %d, hand %s", jeez, hand))
@@ -122,12 +115,10 @@ func classifyHandPart2(hand string) handType {
 		// not matched any of the above, there are two possibilities:
 		// JJ234, in which case the 2 Js can turn into whatever else, or
 		// 2234J, in which case the single J can turn into whatever the pair is
-		fmt.Printf("class %9s, hand %s, returning three of a kind\n", class, hand)
 		return threeOfAKind
 	case highCard:
 		// not matched anything above, there's strictly 1 J present (we know because it hasn't matched
 		// anything above), that J can take up whatever other form
-		fmt.Printf("class %9s, hand %s, returning one pair\n", class, hand)
 		return onePair
 	default:
 		panic(fmt.Sprintf("this should never have happened, the class is %s, the hand is %s", class, hand))
