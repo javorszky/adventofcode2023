@@ -50,4 +50,65 @@ Do a for loop, do a bunch of lookups, check whether we arrived at ZZZ yet, if no
 
 ## Part 2
 
+The sandstorm is upon you and you aren't any closer to escaping the wasteland. You had the camel follow the instructions, but you've barely left your starting position. It's going to take **significantly more steps** to escape!
+
+What if the map isn't for people - what if the map is for **ghosts**? Are ghosts even bound by the laws of spacetime? Only one way to find out.
+
+After examining the maps a bit longer, your attention is drawn to a curious fact: the number of nodes with names ending in `A` is equal to the number ending in `Z`! If you were a ghost, you'd probably just **start at every node that ends with A** and follow all of the paths at the same time until they all simultaneously end up at nodes that end with `Z`.
+
+For example:
+
+```
+LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)
+```
+Here, there are two starting nodes, `11A` and `22A` (because they both end with `A`). As you follow each left/right instruction, use that instruction to **simultaneously** navigate away from both nodes you're currently on. Repeat this process until **all** of the nodes you're currently on end with `Z`. (If only some of the nodes you're on end with `Z`, they act like any other node and you continue as normal.) In this example, you would proceed as follows:
+
+
+ * Step 0: You are at `11A` and `22A`.
+ * Step 1: You choose all of the **left** paths, leading you to `11B` and `22B`.
+ * Step 2: You choose all of the **right** paths, leading you to **`11Z`** and `22C`.
+ * Step 3: You choose all of the **left** paths, leading you to `11B` and **`22Z`**.
+ * Step 4: You choose all of the **right** paths, leading you to **`11Z`** and `22B`.
+ * Step 5: You choose all of the **left** paths, leading you to `11B` and `22C`.
+ * Step 6: You choose all of the **right** paths, leading you to **`11Z`** and **`22Z`**.
+
+So, in this example, you end up entirely on nodes that end in `Z` after **`6`** steps.
+
+Simultaneously start on every node that ends with `A`. **How many steps does it take before you're only on nodes that end with Z?**
+
 ### Solution
+
+Ugh, another heat death of the universe thing. SO the thing that I needed to figure out is that a lot of times if you need to jump from a node to the two others, those two will jump to the same nodes, criss crossing the paths. See this sequence from my input:
+```
+BKZ = (BLG, LVB)
+
+BLG = (HJV, RSF)
+LVB = (RSF, HJV)
+
+HJV = (KVV, LKL)
+RSF = (LKL, KVV)
+
+KVV = (DHF, PGX)
+LKL = (DHF, PGX)
+
+DHF = (FQS, GNH)
+PGX = (GNH, FQS)
+```
+Another revelation is that the starters will not ever be jumped TO, once you start, there's no going back there.
+
+Yet another is that each starter will find exactly one end node (with a Z), which makes things a lot easier.
+
+And then the paths cycle in a circle. This, with the crisscross just means that the direction taken isn't actually that important, which also means that no matter which direction we are, we'll reach the same Z in the same number of steps.
+
+Therefore I need to see on what steps do I reach the Z the second time, subtract that step from the step I reached it the first time, and that's my cycle for a given starting A node.
+
+And then it's just a calculate the lowest common multiple between all of them.
