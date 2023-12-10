@@ -31,6 +31,7 @@ var tierOrder = []handType{
 	fourOfAKind,
 	fiveOfAKind,
 }
+
 var cardMap = map[string]int{
 	"2": 2,
 	"3": 3,
@@ -85,7 +86,6 @@ func Task1(l zerolog.Logger) {
 	for _, currentClass := range tierOrder {
 		localSlice := sortHands(classification[currentClass])
 
-		fmt.Printf("okay, so apparently sorted %s\n%v\n\n", currentClass, localSlice)
 		globalOrder = append(globalOrder, localSlice...)
 	}
 
