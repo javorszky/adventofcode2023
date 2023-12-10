@@ -61,13 +61,15 @@ func Task2(l zerolog.Logger) {
 
 	for _, currentClass := range tierOrder {
 		localSlice := sortHandsPart2(classification[currentClass])
-
+		fmt.Printf("========= Putting the %s ordered into global order ============\n", currentClass)
+		fmt.Printf("%v\n\n", localSlice)
 		globalOrder = append(globalOrder, localSlice...)
 	}
 
 	sum := 0
 
 	for i, card := range globalOrder {
+		fmt.Printf("adding the rank %d times bid %d = %d to the sum\n", i+1, hands[card], (i+1)*hands[card])
 		sum += (i + 1) * hands[card]
 	}
 
@@ -135,7 +137,7 @@ func classifyHandPart2(hand string) handType {
 // This will order the hands in ascending order, which means the weakest hand is going to be at the
 // beginning of the resulting slice.
 func sortHandsPart2(hands []string) []string {
-	slices.SortFunc(hands, cardSortFuncPart2)
+	slices.SortStableFunc(hands, cardSortFuncPart2)
 
 	return hands
 }
@@ -169,6 +171,6 @@ func cardSortFuncPart2(a, b string) int {
 		}
 	}
 
-	//fmt.Printf("everything was same, returning 0\n")
+	fmt.Printf("everything was same, returning 0\n")
 	return 0
 }
