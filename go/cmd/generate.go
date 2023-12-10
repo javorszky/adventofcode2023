@@ -107,7 +107,7 @@ $ aoc23 generate 9 --day 14
 		}
 		defer i1.Close()
 
-		i2, err := os.OpenFile(dirName+"/input2.txt", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0755)
+		i2, err := os.OpenFile(dirName+"/example.txt", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0755)
 		if err != nil {
 			log.Fatalf("Creating file 'readme.md' failed: %s", err.Error())
 		}
