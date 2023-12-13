@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/javorszky/adventofcode2023/inputs"
 	"github.com/rs/zerolog"
@@ -59,21 +60,9 @@ func Task1(l zerolog.Logger) {
 			// link that new node's address to the left of start
 			pMap.start.leftNode = newNode
 
-			//fmt.Printf("new node address: %p\n"+
-			//	"start left: %p\n"+
-			//	"start address: %p\n"+
-			//	"new node right: %p\n"+
-			//	"\nstart right: %p, is nil? %t\n"+
-			//	"new node left: %p, is nil? %t\n",
-			//	newNode, pMap.start.leftNode, pMap.start, newNode.rightNode,
-			//	pMap.start.rightNode, pMap.start.rightNode == nil, newNode.leftNode, newNode.leftNode == nil)
-
-			//fmt.Printf("newnode address again: %p\n", newNode)
 			// set the current node to the new node and the current move as the last move
 			currentNode = newNode
 			lastMove = d
-
-			//fmt.Printf("currentnode address after assignment: %p\n", currentNode)
 
 			// actually move in the map
 			err = pMap.move(d)
@@ -87,17 +76,12 @@ func Task1(l zerolog.Logger) {
 	// we need to go leftNode
 	elements := 0
 	for {
-		//fmt.Printf("\nmoved %s, current node type is %s\n", lastMove, currentNode.nodeType)
 		dirs := connects(currentNode)
-		//fmt.Printf("possible directions are %v\n", dirs)
-		//fmt.Printf("the opposite of %s is __%s__, so we're not moving THAT way\n", lastMove, op[lastMove])
 		if op[lastMove] == dirs[0] {
 			lastMove = dirs[1]
 		} else {
 			lastMove = dirs[0]
 		}
-
-		//fmt.Printf("decided to move towards %s\n", lastMove)
 
 		nextNode, err := pMap.peek(lastMove)
 		if err != nil {
@@ -112,16 +96,6 @@ func Task1(l zerolog.Logger) {
 		if err != nil {
 			localLogger.Err(err).Msgf("actually moving was bad")
 		}
-		//
-		//fmt.Printf("in the walk, connections of currentNode:\n"+
-		//	"- left: %p\n"+
-		//	"- right: %p\n", currentNode.leftNode, currentNode.rightNode)
-		//fmt.Printf("in the walk, connections of nextNode:\n"+
-		//	"- left: %p\n"+
-		//	"- right: %p\n", nextNode.leftNode, nextNode.rightNode)
-		//
-		//fmt.Printf("attaching nextNode to currentNode.left\n" +
-		//	"and attaching currentNode to nextNode.right\n")
 		currentNode.leftNode = nextNode
 		nextNode.rightNode = currentNode
 
@@ -137,11 +111,9 @@ func Task1(l zerolog.Logger) {
 	// okay, we have a ring at this point
 	currentLeft := pMap.start.left()
 	currentLeft.distanceFromS = 1
-	//visuals[currentLeft.coord.row*pMap.cols+currentLeft.coord.col] = "1"
 
 	currentRight := pMap.start.right()
 	currentRight.distanceFromS = 1
-	//visuals[currentRight.coord.row*pMap.cols+currentRight.coord.col] = "1"
 
 	previousLeft, previousRight := pMap.start, pMap.start
 
@@ -180,11 +152,16 @@ type coordinate struct {
 	row, col int
 }
 
+func (c coordinate) String() string {
+	return fmt.Sprintf("%d-%d", c.row, c.col)
+}
+
 type pipeMap struct {
 	layout     string
 	rows, cols int
 	start      *node
 	current    coordinate
+	lock       *sync.RWMutex
 }
 
 func (p *pipeMap) move(d direction) error {
@@ -234,11 +211,29 @@ func (p *pipeMap) move(d direction) error {
 	return nil
 }
 
+func (p *pipeMap) normalize(c coordinate) {
+	p.updateFieldTo(c, pipeNone)
+}
+
+func (p *pipeMap) flipStartTo(shape string) {
+	si := strings.Index(p.layout, "S")
+
+	p.layout = p.layout[:si] + shape + p.layout[si+1:]
+}
+
+func (p *pipeMap) updateFieldTo(c coordinate, to string) {
+	p.lock.Lock()
+	defer p.lock.Unlock()
+
+	i := c.row*p.cols + c.col
+
+	p.layout = p.layout[:i] + to + p.layout[i+1:]
+}
+
 func (p *pipeMap) peek(d direction) (*node, error) {
 	var (
 		newRow int
 		newCol int
-		i      int
 	)
 
 	switch d {
@@ -249,7 +244,6 @@ func (p *pipeMap) peek(d direction) (*node, error) {
 
 		newRow = p.current.row - 1
 		newCol = p.current.col
-		i = newRow*p.cols + newCol
 	case east:
 		if p.current.col == p.cols-1 {
 			return nil, errors.New("we're on the rightNode edge, can't peek east")
@@ -257,7 +251,6 @@ func (p *pipeMap) peek(d direction) (*node, error) {
 
 		newRow = p.current.row
 		newCol = p.current.col + 1
-		i = newRow*p.cols + newCol
 	case south:
 		if p.current.row == p.rows-1 {
 			return nil, errors.New("we're on the bottom edge, can't peek south")
@@ -265,7 +258,6 @@ func (p *pipeMap) peek(d direction) (*node, error) {
 
 		newRow = p.current.row + 1
 		newCol = p.current.col
-		i = newRow*p.cols + newCol
 	case west:
 		if p.current.col == 0 {
 			return nil, errors.New("we're on the leftNode edge, can't peek west")
@@ -273,21 +265,28 @@ func (p *pipeMap) peek(d direction) (*node, error) {
 
 		newRow = p.current.row
 		newCol = p.current.col - 1
-		i = newRow*p.cols + newCol
 	default:
 		panic("this should not have happened!")
 	}
 
+	return p.getNode(coordinate{
+		row: newRow,
+		col: newCol,
+	}), nil
+}
+
+func (p *pipeMap) getNode(c coordinate) *node {
+	i := c.row*p.cols + c.col
 	return &node{
 		nodeType:      string(p.layout[i]),
 		distanceFromS: 0,
 		coord: coordinate{
-			row: newRow,
-			col: newCol,
+			row: c.row,
+			col: c.col,
 		},
 		leftNode:  nil,
 		rightNode: nil,
-	}, nil
+	}
 }
 
 func newPipeMap(gog []string) *pipeMap {
@@ -298,7 +297,7 @@ func newPipeMap(gog []string) *pipeMap {
 	i := strings.Index(layout, pipeStart)
 
 	// row and col are 0-indexed
-	sRow := i / rows
+	sRow := i / cols
 	sCol := i - (sRow * cols)
 
 	p := pipeMap{
@@ -319,6 +318,7 @@ func newPipeMap(gog []string) *pipeMap {
 			row: sRow,
 			col: sCol,
 		},
+		lock: new(sync.RWMutex),
 	}
 
 	return &p
@@ -328,6 +328,7 @@ type node struct {
 	nodeType            string
 	distanceFromS       int
 	coord               coordinate
+	outside, inside     [2]direction
 	leftNode, rightNode *node
 }
 
