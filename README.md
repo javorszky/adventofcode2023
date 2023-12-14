@@ -15,3 +15,4 @@ Go | Rust
 [Day 9](go/day9/) |
 [Day 10](go/day10/) |
 [Day 11](go/day11/) |
+[Day 12](go/day12/) |
