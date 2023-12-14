@@ -142,5 +142,7 @@ func distance(a, b galaxy) int {
 		horz = -horz
 	}
 
+	//fmt.Printf("          %+v : diff: %d\n", [2]galaxy{a, b}, vert+horz)
+
 	return vert + horz
 }

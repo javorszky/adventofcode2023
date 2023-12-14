@@ -121,4 +121,21 @@ Original -> grow -> rotate that -> grow -> find galaxies -> pair galaxies -> rol
 
 ## Part 2
 
+The galaxies are much **older** (and thus much **farther apart**) than the researcher initially estimated.
+
+Now, instead of the expansion you did before, make each empty row or column **one million times** larger. That is, each empty row should be replaced with `1000000` empty rows, and each empty column should be replaced with `1000000` empty columns.
+
+(In the example above, if each empty row or column were merely `10` times larger, the sum of the shortest paths between every pair of galaxies would be **`1030`**. If each empty row or column were merely `100` times larger, the sum of the shortest paths between every pair of galaxies would be **`8410`**. However, your universe will need to expand far beyond these values.)
+
+Starting with the same initial image, expand the universe according to these new rules, then find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?
+
 ### Solution
+
+Instead of actually expanding the universe, I just take note of the rows and columns of where the expansion WOULD happen. Then when I calculate the distance between a pair of galaxies, I check how many vertical and horizontal expansions would have happened, multiply that by the expansion rate -1 (999,999), and sum it together.
+
+For example if the galaxies are [row: 4, col: 5] and [row: 16, col: 82], and there are 2 expansions horizontally between rows 4 and 16 (not including those two), and 9 expansions between columns 5 and 82 (not including those two), then I can adjust the larger galaxy coordinates with the help of these.
+
+In this case the larger row is 16, 2 expansions * 999,999, this becomes 2,000,014.
+The larger column is 82, 9 expansions * 999,999, this becomes 9,000,073
+
+Then the difference is between 2,000,014-4 + 9,000,073 - 5.
